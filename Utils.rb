@@ -1,6 +1,21 @@
 include Math
+require './Matrix.rb'
+require './MatrixUtils.rb'
 
 module Utils
+
+  def self.restrict(n, bot: 0, top: 255)
+    return [[n, top].min, 0].max
+  end
+
+  # Calculates light at a point using Phong Reflection Model
+  def self.calc_light(view, normal)
+    ambient = $AMBIENT_LIGHT.zip($Ka).map{|x, y| x * y}
+    diffuse = $POINT_LIGHT[1].zip($Kd).map{|x, y| x * y}
+    specular = $POINT_LIGHT[1].zip($Ks).map{|x, y| x * y}
+
+    return specular.zip(ambient.zip(diffuse).map{|x, y| x + y}).map{|x, y| x + y}.map{|x| restrict(x)} #exhales slowly
+  end
 
   def self.write_out(file: $OUTFILE)
     $SCREEN.write_out(file: file)
