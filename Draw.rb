@@ -271,11 +271,10 @@ module Draw
       coord0 = polymat.get_col(i)
       coord1 = polymat.get_col(i + 1)
       coord2 = polymat.get_col(i + 2)
-      if (calc_normal(coord0, coord1, coord2)[2] > 0)
-        #line(coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, r: 0, g: 0, b: 0)
-        #line(coord1[0].to_i, coord1[1].to_i, coord1[2].to_i, coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, r: 0, g: 0, b: 0)
-        #line(coord2[0].to_i, coord2[1].to_i, coord2[2].to_i, coord0[0].to_i, coord0[1].to_i, coord0[2].to_i, r: 0, g: 0, b: 0)
-        fill_triangle(coord0, coord1, coord2, r: rand(256), g: rand(256), b: rand(256))
+      normal = calc_normal(coord0, coord1, coord2)
+      if (normal[2] > 0)
+        color = Utils.calc_light($VIEW, normal)
+        fill_triangle(coord0, coord1, coord2, r: color[0], g: color[1], b: color[2])
       end
       i+=3
     end

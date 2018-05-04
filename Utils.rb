@@ -1,6 +1,7 @@
 include Math
 require './Matrix.rb'
 require './MatrixUtils.rb'
+require './VectorUtils.rb'
 
 module Utils
 
@@ -10,9 +11,19 @@ module Utils
 
   # Calculates light at a point using Phong Reflection Model
   def self.calc_light(view, normal)
+    v = VectorUtils.normalize(view)
+    n = VectorUtils.normalize(normal)
+    l = VectorUtils.normalize($POINT_LIGHT[0])
+
     ambient = $AMBIENT_LIGHT.zip($Ka).map{|x, y| x * y}
     diffuse = $POINT_LIGHT[1].zip($Kd).map{|x, y| x * y}
     specular = $POINT_LIGHT[1].zip($Ks).map{|x, y| x * y}
+    costheta = VectorUtils.dot_product(l, n)
+    temp = VectorUtils.dot_product(n, l)
+    cosalpha = VectorUtils.dot_product(n.map{|a| a*temp*2}.zip(l).map{|a, b| a - b}, v)
+
+    diffuse = diffuse.map{|a| a*costheta}
+    specular = specular.map{|a| a*cosalpha}
 
     return specular.zip(ambient.zip(diffuse).map{|x, y| x + y}).map{|x, y| x + y}.map{|x| restrict(x)} #exhales slowly
   end
