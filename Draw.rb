@@ -300,7 +300,7 @@ module Draw
 
     dx0 = (top[0] - bot[0])/(top[1] - bot[1])
     dz0 = (top[2] - bot[2])/(top[1] - bot[1])
-    if (mid[1] - bot[1]) >= 0.9
+    if (mid[1] - bot[1]) > 0.001
       dx1 = (mid[0] - bot[0])/(mid[1] - bot[1])
       dz1 = (mid[2] - bot[2])/(mid[1] - bot[1])
       for y in (bot[1].round...mid[1].round)
@@ -317,7 +317,7 @@ module Draw
     x1 = mid[0]
     z1 = mid[2]
 
-    if (top[1] - mid[1]) >= 0.9
+    if (top[1] - mid[1]) > 0.001
       dx1 = (top[0] - mid[0])/(top[1]-mid[1])
       dz1 = (top[2] - mid[2])/(top[1]-mid[1])
       for y in (mid[1].round...top[1].round)

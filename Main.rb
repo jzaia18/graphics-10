@@ -12,9 +12,9 @@ $TAU = PI*2
 
 # Changeable
 $RESOLUTION = 500 # All images are squares
-$DEBUGGING = true
-$BACKGROUND_COLOR = [255, 255, 255] # [r, g, b]
-$DRAW_COLOR = [50, 255, 255] # for 2D drawing
+$DEBUGGING = false
+$BACKGROUND_COLOR = [255, 255, 235] # [r, g, b]
+$DRAW_COLOR = [0, 0, 0] # for 2D drawing
 $INFILE = "script"
 $OUTFILE = "image.ppm"
 $TEMPFILE = "temmmmp.ppm" # Used as temp storage for displaying
