@@ -303,15 +303,15 @@ module Draw
     if (mid[1] - bot[1]) >= 0.9
       dx1 = (mid[0] - bot[0])/(mid[1] - bot[1])
       dz1 = (mid[2] - bot[2])/(mid[1] - bot[1])
-      for y in (bot[1].to_i...mid[1].to_i)
-        line(x0.to_i, y, z0.to_i, x1.to_i, y, z1.to_i, r: r, g: g, b: b)
+      for y in (bot[1].round...mid[1].round)
+        line(x0.round, y, z0, x1.round, y, z1, r: r, g: g, b: b)
         x0 += dx0
         z0 += dz0
         x1 += dx1
         z1 += dz1
       end
     else
-      line(bot[0], bot[1].to_i, bot[2], mid[0], mid[1].to_i, mid[2], r: r, g: g, b: b)
+      line(bot[0].round, bot[1].round, bot[2], mid[0].round, mid[1].round, mid[2], r: r, g: g, b: b)
     end
 
     x1 = mid[0]
@@ -320,15 +320,15 @@ module Draw
     if (top[1] - mid[1]) >= 0.9
       dx1 = (top[0] - mid[0])/(top[1]-mid[1])
       dz1 = (top[2] - mid[2])/(top[1]-mid[1])
-      for y in (mid[1].to_i...top[1].to_i)
-        line(x0.to_i, y, z0.to_i, x1.to_i, y, z1.to_i, r: r, g: g, b: b)
+      for y in (mid[1].round...top[1].round)
+        line(x0.round, y, z0, x1.round, y, z1, r: r, g: g, b: b)
         x0 += dx0
         z0 += dx0
         x1 += dx1
         z1 += dx1
       end
     else
-      line(top[0].to_i, top[1].to_i, top[2].to_i, mid[0].to_i, mid[1].to_i, mid[2].to_i, r: r, g: g, b: b)
+      line(top[0].round, top[1].round, top[2], mid[0].round, mid[1].round, mid[2], r: r, g: g, b: b)
     end
 
   end

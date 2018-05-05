@@ -6,7 +6,7 @@ require './VectorUtils.rb'
 module Utils
 
   def self.restrict(n, bot: 0, top: 255)
-    return [[n, top].min, 0].max
+    return [[n, top].min, bot].max
   end
 
   # Calculates light at a point using Phong Reflection Model
@@ -20,10 +20,10 @@ module Utils
     specular = $POINT_LIGHT[1].zip($Ks).map{|x, y| x * y}
     costheta = VectorUtils.dot_product(l, n)
     temp = VectorUtils.dot_product(n, l)
-    cosalpha = VectorUtils.dot_product(n.map{|a| a*temp*2}.zip(l).map{|a, b| a - b}, v)
+    cosalpha = [VectorUtils.dot_product(n.map{|a| a*temp*2}.zip(l).map{|a, b| a - b}, v), 0].max**8
 
-    diffuse = diffuse.map{|a| a*costheta}
-    specular = specular.map{|a| a*cosalpha}
+    diffuse  = diffuse.map{|x| x*costheta}
+    specular = specular.map{|x| x*cosalpha}
 
     return specular.zip(ambient.zip(diffuse).map{|x, y| x + y}).map{|x, y| x + y}.map{|x| restrict(x)} #exhales slowly
   end
