@@ -14,11 +14,11 @@ $TAU = PI*2
 $RESOLUTION = 500 # All images are squares
 $DEBUGGING = true
 $BACKGROUND_COLOR = [255, 255, 255] # [r, g, b]
-$DRAW_COLOR = [255, 255, 90] # for 2D drawing
+$DRAW_COLOR = [50, 255, 255] # for 2D drawing
 $INFILE = "script"
 $OUTFILE = "image.ppm"
 $TEMPFILE = "temmmmp.ppm" # Used as temp storage for displaying
-$dt = 0.1 # The amount that the parametric t is incremented by on each loop
+$STEP = 100 # Number of iterations needed to to finish a parametric
 $AMBIENT_LIGHT = [50, 50, 50]
 $POINT_LIGHT = [[0.5, 0.75, 1],
                 [0, 255, 255]]

@@ -89,22 +89,20 @@ module Draw
   end
 
   # Circle
-  def self.circle(cx, cy, cz, rad, mat)
-    t = 0
-    while (t < 1)
-      add_edge(cx + rad * cos($TAU * t), cy + rad * sin($TAU * t), cz, cx + rad * cos($TAU * (t + $dt)), cy + rad * sin($TAU * (t + $dt)), cz, mat)
-      t += $dt
+  def self.circle(cx, cy, cz, rad, mat, step: $STEP)
+    for t in (0...step)
+      add_edge(cx + rad * cos($TAU * t / step), cy + rad * sin($TAU * t / step), cz, cx + rad * cos($TAU * (t + 1) / step), cy + rad * sin($TAU * (t + 1) / step), cz, mat)
     end
   end
 
-  def self.cubic(ax, bx, cx, dx, ay, by, cy, dy, mat)
-    t = 0
-    while t < 1
-      x0 = ax*(t**3) + bx*(t**2) + cx*t + dx
-      y0 = ay*(t**3) + by*(t**2) + cy*t + dy
-      t+= $dt
-      x1 = ax*(t**3) + bx*(t**2) + cx*t + dx
-      y1 = ay*(t**3) + by*(t**2) + cy*t + dy
+  def self.cubic(ax, bx, cx, dx, ay, by, cy, dy, mat, step: $STEP)
+    for t in (0...step)
+      q = t.to_f / step
+      r = (t + 1).to_f / step
+      x0 = ax*(q**3) + bx*(q**2) + cx*q + dx
+      y0 = ay*(q**3) + by*(q**2) + cy*q + dy
+      x1 = ax*(r**3) + bx*(r**2) + cx*r + dx
+      y1 = ay*(r**3) + by*(r**2) + cy*r + dy
       add_edge(x0, y0, 0, x1, y1, 0, mat)
     end
   end
@@ -163,49 +161,53 @@ module Draw
   end
 
   # Connects a matrix of points in a sphere-like fashion (requires gen_sphere())
-  def self.sphere(cx, cy, cz, r, mat)
-    points = gen_sphere(cx, cy, cz, r)
+  def self.sphere(cx, cy, cz, r, mat, step: $STEP)
+    points = gen_sphere(cx, cy, cz, r, step: step)
     i = 0
-    layer_increment = (1/$dt + 1).to_i
-    for i in 0...(layer_increment-1)
-      for j in 0...(layer_increment-1)
-        next if i%layer_increment == layer_increment-1
+    layer_increment = step + 1
+    for i in 0...step
+      for j in 0...step
+        #next if i%layer_increment == layer_increment-2
         p0 = points.get_col( i*layer_increment + j)
         p1 = points.get_col( i*layer_increment + j + 1)
         p2 = points.get_col((i*layer_increment + j + 1 + layer_increment)%points.cols)
         p3 = points.get_col((i*layer_increment + j + layer_increment)%points.cols)
-        add_polygon(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], mat)
-        add_polygon(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2], mat)
+        # puts p0.to_s
+        # puts p1.to_s
+        # puts p2.to_s
+        # puts p3.to_s
+        add_polygon(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], mat) if p1
+        add_polygon(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2], mat) if j != 0
       end
     end
   end
 
   # Returns a matrix of all points on surface of a sphere (helper for sphere())
-  def self.gen_sphere(cx, cy, cz, r)
+  def self.gen_sphere(cx, cy, cz, r, step: $STEP)
     ret = Matrix.new(3, 0)
     phi = 0
-    while phi < 1
+    while phi < step
       theta = 0
-      _phi = phi*$TAU
-      while theta < 1
-        _theta = theta*PI
+      _phi = phi*$TAU/step
+      while theta <= step
+        _theta = theta*PI/step
         x = r*cos(_theta) + cx
         y = r*sin(_theta)*cos(_phi) + cy
         z = r*sin(_theta)*sin(_phi) + cz
         ret.add_col([x, y, z])
-        theta += $dt
+        theta += 1
       end
-      phi += $dt
+      phi += 1
     end
     return ret
   end
 
   # Connects a matrix of points in a torus-like fashion (requires gen_torus())
-  def self.torus(cx, cy, cz, r1, r2, mat)
-    points = gen_torus(cx, cy, cz, r1, r2)
-    layer_increment = (1/$dt + 1).to_i
-    for i in 0...(layer_increment-1)
-      for j in 0...(layer_increment-1)
+  def self.torus(cx, cy, cz, r1, r2, mat, step: $STEP)
+    points = gen_torus(cx, cy, cz, r1, r2, step: step)
+    layer_increment = step + 1
+    for i in 0...step
+      for j in 0...step
         p0 = points.get_col( i*layer_increment + j)
         p1 = points.get_col( i*layer_increment + j + 1)
         p2 = points.get_col((i*layer_increment + j + layer_increment + 1)%points.cols)
@@ -217,20 +219,19 @@ module Draw
   end
 
   # Returns a matrix of all points on surface of a torus (helper for torus())
-  def self.gen_torus(cx, cy, cz, r1, r2)
+  def self.gen_torus(cx, cy, cz, r1, r2, step: $STEP)
     ret = Matrix.new(3, 0)
     phi = 0
-    delta = $dt * $TAU
-    while phi < $TAU
-      theta = 0
-      while theta <= $TAU
-        x = (r1 * cos(theta) + r2) * cos(phi) + cx
-        y = r1 * sin(theta) + cy
-        z = -1 * (r1 * cos(theta) + r2) * sin(phi) + cz
+    delta = $TAU / step
+    for phi in (0...step)
+      for theta in (0..step)
+        p = phi * delta
+        t = theta * delta
+        x = (r1 * cos(t) + r2) * cos(p) + cx
+        y = r1 * sin(t) + cy
+        z = -1 * (r1 * cos(t) + r2) * sin(p) + cz
         ret.add_col([x, y, z])
-        theta += delta
       end
-      phi += delta
     end
     return ret
   end
